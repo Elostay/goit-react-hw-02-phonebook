@@ -14,27 +14,21 @@ class App extends Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
-    name: '',
-    number: '',
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const name = form.elements.name.value;
-    const number = form.elements.number.value;
-
+  handleSubmit = ({ name, number }) => {
     const isExist = this.state.contacts.some(contact => contact.name === name);
+
     if (isExist) {
       alert(`${name} is already in contacts`);
       return;
     }
+
     this.setState(prevState => {
       return {
         contacts: [...prevState.contacts, { name, number, id: nanoid() }],
       };
     });
-    form.reset();
   };
 
   changeFilter = e => {
@@ -46,13 +40,18 @@ class App extends Component {
       contacts: prevState.contacts.filter(contact => contact.id !== deleteId),
     }));
   };
-  render() {
-    const { contacts, filter } = this.state;
 
+  getFilteredContacts = () => {
+    const { contacts, filter } = this.state;
     const normalizedFilter = filter.toLowerCase().trim();
     const visibleContacts = contacts.filter(contact =>
       contact.name.toLowerCase().trim().includes(normalizedFilter)
     );
+    return visibleContacts;
+  };
+  render() {
+    const { contacts, filter } = this.state;
+    const visibleContacts = this.getFilteredContacts();
 
     return (
       <Container>
